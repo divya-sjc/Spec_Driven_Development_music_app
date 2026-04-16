@@ -1,0 +1,13 @@
+{
+  "name": "package.json",
+  "version": "1.0.0",
+  "description": "Spec_driven_development",
+  "license": "ISC",
+  "author": "",
+  "type": "commonjs",
+  "main": "index.js",
+  "scripts": {
+  "start": "node index.js",
+  "test": "echo \"Error: no test specified\" && exit 1"
+}
+}
