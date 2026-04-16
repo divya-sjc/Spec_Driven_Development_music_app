@@ -6,6 +6,7 @@ import { ExternalLink } from '@/components/external-link';
 import ParallaxScrollView from '@/components/parallax-scroll-view';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
+import { AudioPlayer } from '@/components/audio-player';
 import { IconSymbol } from '@/components/ui/icon-symbol';
 import { Fonts } from '@/constants/theme';
 
@@ -93,6 +94,12 @@ export default function TabTwoScreen() {
             </ThemedText>
           ),
         })}
+      </Collapsible>
+      <Collapsible title="Audio Player">
+        <ThemedText>
+          Test the basic audio playback functionality. Click the play button to load and play a sample audio file.
+        </ThemedText>
+        <AudioPlayer />
       </Collapsible>
     </ParallaxScrollView>
   );

@@ -9,9 +9,16 @@
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.musicapp",
+      "infoPlist": {
+        "NSAppleMusicUsageDescription": "This app needs access to your music library to display and play your albums.",
+        "NSPhotoLibraryUsageDescription": "This app needs access to your photo library to display album artwork."
+      },
+      "associatedDomains": ["applinks:musicapp.app"]
     },
     "android": {
+      "package": "com.musicapp",
       "adaptiveIcon": {
         "backgroundColor": "#E6F4FE",
         "foregroundImage": "./assets/images/android-icon-foreground.png",
@@ -19,7 +26,23 @@
         "monochromeImage": "./assets/images/android-icon-monochrome.png"
       },
       "edgeToEdgeEnabled": true,
-      "predictiveBackGestureEnabled": false
+      "predictiveBackGestureEnabled": false,
+      "permissions": [
+        "READ_EXTERNAL_STORAGE",
+        "READ_MEDIA_AUDIO"
+      ],
+      "intentFilters": [
+        {
+          "action": "VIEW",
+          "autoVerify": true,
+          "data": [
+            {
+              "scheme": "musicapp"
+            }
+          ],
+          "category": ["BROWSABLE", "DEFAULT"]
+        }
+      ]
     },
     "web": {
       "output": "static",
@@ -37,6 +60,12 @@
           "dark": {
             "backgroundColor": "#000000"
           }
+        }
+      ],
+      [
+        "expo-media-library",
+        {
+          "saveAlbumPermissions": ["saveToMyMusic"]
         }
       ]
     ],
