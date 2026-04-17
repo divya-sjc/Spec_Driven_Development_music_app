@@ -72,7 +72,8 @@
       [
         "expo-av",
         {
-          "microphonePermission": false
+          "microphonePermission": false,
+          "recordingAudioPermissionMode": "compact"
         }
       ]
     ],
