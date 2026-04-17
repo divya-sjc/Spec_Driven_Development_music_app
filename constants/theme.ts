@@ -1,48 +1,44 @@
-/**
- * Below are the colors that are used in the app. The colors are defined in the light and dark mode.
- * There are many other ways to style your app. For example, [Nativewind](https://www.nativewind.dev/), [Tamagui](https://tamagui.dev/), [unistyles](https://reactnativeunistyles.vercel.app), etc.
- */
-
 import { Platform } from 'react-native';
+import { colors, fontFamilies, fontWeights } from '@/utils';
 
-const tintColorLight = '#0a7ea4';
-const tintColorDark = '#fff';
+const tintColorLight = colors.primary;
+const tintColorDark = colors.tint.dark;
 
 export const Colors = {
   light: {
-    text: '#11181C',
-    background: '#fff',
+    text: colors.text.primary.light,
+    background: colors.background.light,
     tint: tintColorLight,
-    icon: '#687076',
-    tabIconDefault: '#687076',
+    icon: colors.icon.light,
+    tabIconDefault: colors.icon.light,
     tabIconSelected: tintColorLight,
+    surface: colors.surface.light,
+    border: colors.border.light,
   },
   dark: {
-    text: '#ECEDEE',
-    background: '#151718',
+    text: colors.text.primary.dark,
+    background: colors.background.dark,
     tint: tintColorDark,
-    icon: '#9BA1A6',
-    tabIconDefault: '#9BA1A6',
+    icon: colors.icon.dark,
+    tabIconDefault: colors.icon.dark,
     tabIconSelected: tintColorDark,
+    surface: colors.surface.dark,
+    border: colors.border.dark,
   },
 };
 
 export const Fonts = Platform.select({
   ios: {
-    /** iOS `UIFontDescriptorSystemDesignDefault` */
-    sans: 'system-ui',
-    /** iOS `UIFontDescriptorSystemDesignSerif` */
-    serif: 'ui-serif',
-    /** iOS `UIFontDescriptorSystemDesignRounded` */
-    rounded: 'ui-rounded',
-    /** iOS `UIFontDescriptorSystemDesignMonospaced` */
-    mono: 'ui-monospace',
+    sans: fontFamilies.sans,
+    serif: fontFamilies.serif,
+    rounded: 'System',
+    mono: fontFamilies.mono,
   },
   default: {
-    sans: 'normal',
-    serif: 'serif',
-    rounded: 'normal',
-    mono: 'monospace',
+    sans: fontFamilies.sans,
+    serif: fontFamilies.serif,
+    rounded: 'System',
+    mono: fontFamilies.mono,
   },
   web: {
     sans: "system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif",
@@ -51,3 +47,5 @@ export const Fonts = Platform.select({
     mono: "SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace",
   },
 });
+
+export { colors, fontFamilies, fontWeights };
