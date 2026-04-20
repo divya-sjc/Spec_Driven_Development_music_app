@@ -1,12 +1,21 @@
 import * as MediaLibrary from 'expo-media-library';
-import { Track } from '@/types/album';
+import { Song } from '@/types/Song';
 import { v4 as uuidv4 } from 'uuid';
 
 export interface ScanResult {
-  tracks: Track[];
+  songs: Song[];
   totalScanned: number;
+  hasMore: boolean;
   errors: string[];
 }
+
+export interface ScanOptions {
+  first?: number;
+  after?: string;
+  filterShort?: boolean;
+}
+
+const MIN_DURATION = 30;
 
 export async function requestPermissions(): Promise<boolean> {
   const { status } = await MediaLibrary.requestPermissionsAsync();
@@ -18,30 +27,48 @@ export async function checkPermissions(): Promise<boolean> {
   return status === 'granted';
 }
 
-export async function scanDeviceForAudio(): Promise<ScanResult> {
-  const tracks: Track[] = [];
+export async function requestPermissionsWithAlert(): Promise<boolean> {
+  const { status } = await MediaLibrary.getPermissionsAsync();
+  
+  if (status === 'granted') {
+    return true;
+  }
+  
+  const { status: newStatus } = await MediaLibrary.requestPermissionsAsync();
+  return newStatus === 'granted';
+}
+
+export async function scanDeviceForAudio(options: ScanOptions = {}): Promise<ScanResult> {
+  const { first = 50, after, filterShort = true } = options;
+  const songs: Song[] = [];
   const errors: string[] = [];
   let totalScanned = 0;
+  let hasMore = false;
 
   try {
     const hasPermission = await requestPermissions();
     if (!hasPermission) {
       errors.push('Media library permission denied');
-      return { tracks, totalScanned, errors };
+      return { songs, totalScanned, hasMore, errors };
     }
 
-    const assets = await MediaLibrary.getAssetsAsync({
+    const result = await MediaLibrary.getAssetsAsync({
       mediaType: MediaLibrary.MediaType.audio,
-      first: 1000,
+      first,
+      after,
     });
 
-    totalScanned = assets.assets.length;
+    totalScanned = result.assets.length;
+    hasMore = result.hasNextPage || false;
 
-    for (const asset of assets.assets) {
+    for (const asset of result.assets) {
       try {
-        const track = assetToTrack(asset);
-        if (track) {
-          tracks.push(track);
+        const song = await assetToSong(asset);
+        if (song) {
+          if (filterShort && song.duration < MIN_DURATION) {
+            continue;
+          }
+          songs.push(song);
         }
       } catch (err) {
         errors.push(`Failed to process asset ${asset.id}: ${err}`);
@@ -51,10 +78,27 @@ export async function scanDeviceForAudio(): Promise<ScanResult> {
     errors.push(`Scan failed: ${err}`);
   }
 
-  return { tracks, totalScanned, errors };
+  return { songs, totalScanned, hasMore, errors };
 }
 
-export function assetToTrack(asset: MediaLibrary.Asset): Track | null {
+export async function loadAllSongs(filterShort = true): Promise<{ songs: Song[]; errors: string[] }> {
+  const allSongs: Song[] = [];
+  const errors: string[] = [];
+  let hasMore = true;
+  let cursor: string | undefined;
+
+  while (hasMore) {
+    const result = await scanDeviceForAudio({ first: 100, after: cursor, filterShort });
+    allSongs.push(...result.songs);
+    errors.push(...result.errors);
+    hasMore = result.hasMore;
+    cursor = hasMore ? `${allSongs.length}` : undefined;
+  }
+
+  return { songs: allSongs, errors };
+}
+
+export async function assetToSong(asset: MediaLibrary.Asset): Promise<Song | null> {
   if (!asset.uri || !asset.filename) {
     return null;
   }
@@ -76,6 +120,7 @@ export function assetToTrack(asset: MediaLibrary.Asset): Track | null {
     artist: 'Unknown Artist',
     duration,
     audioUri: asset.uri,
+    createdAt: Date.now(),
   };
 }
 
