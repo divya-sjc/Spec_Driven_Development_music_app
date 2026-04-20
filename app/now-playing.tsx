@@ -24,8 +24,8 @@ export default function NowPlayingScreen() {
     play, 
     pause, 
     setCurrentSong,
-    playNext,
-    playPrevious 
+    playNextTrack,
+    playPreviousTrack 
   } = usePlayerStore();
   
   const [position, setPosition] = useState(0);
@@ -53,28 +53,30 @@ export default function NowPlayingScreen() {
     }
   };
 
-  const handleNext = async () => {
-    if (queueIndex < queue.length - 1) {
-      const nextSong = queue[queueIndex + 1];
-      setCurrentSong(nextSong);
-      await playSound(nextSong);
-      setPosition(0);
-      setDuration(nextSong.duration);
-    }
-  };
+const handleNext = async () => {
+  playNextTrack();
+  const nextSong = queue[queueIndex + 1];
+  if (nextSong) {
+    await playSound(nextSong);
+    setPosition(0);
+    setDuration(nextSong.duration);
+  }
+};
 
-  const handlePrevious = async () => {
+const handlePrevious = async () => {
     if (position > 3) {
       setPosition(0);
       await seekSound(0);
       return;
     }
     if (queueIndex > 0) {
+      playPreviousTrack();
       const prevSong = queue[queueIndex - 1];
-      setCurrentSong(prevSong);
-      await playSound(prevSong);
-      setPosition(0);
-      setDuration(prevSong.duration);
+      if (prevSong) {
+        await playSound(prevSong);
+        setPosition(0);
+        setDuration(prevSong.duration);
+      }
     }
   };
 
